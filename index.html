@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>gamewardem.com</title>
+    <link rel="stylesheet" href="index.css">
+    <!-- Bibliotecas Necessárias -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fengari-web@0.1.4/dist/fengari-web.js"></script>
+</head>
+
+<body>
+    <div lua-id="moveel"></div>
+
+    <script>
+        // --- 1. CONFIGURAÇÃO DA FÍSICA (MATTER.JS) ---
+        const { Engine, Render, Runner, Bodies, Composite, Body, Vector } = Matter
+        const engine = Engine.create()
+        const world = engine.world
+
+        const render = Render.create({
+            element: document.body,
+            engine: engine,
+            options: {
+                width: window.innerWidth,
+                height: window.innerHeight,
+                wireframes: false,
+                background: '#1a1a1a'
+            }
+        })
+
+        const chao = Bodies.rectangle(window.innerWidth / 2, window.innerHeight - 20, window.innerWidth, 40, {
+            isStatic: true,
+            render: { fillStyle: '#333' }
+        });
+
+        const personagem = Bodies.rectangle(window.innerWidth / 2, 100, 50, 50, {
+            label: 'personagem',
+            render: { fillStyle: '#00ff88' },
+            friction: 0.1,
+            restitution: 0.3
+        });
+
+        Composite.add(world, [chao, personagem])
+        Render.run(render)
+        Runner.run(Runner.create(), engine)
+
+        // --- 2. EXPOSIÇÃO PARA O LUA ---
+        window.Matter = Matter;
+        window.Body = Body;
+        window.personagem = personagem;
+        window.engine = engine;
+        window.world = world;
+
+        // --- 3. SISTEMA DE INPUT (TECLADO) ---
+        window.teclasPressionadas = {};
+        window.addEventListener('keydown', (e) => { window.teclasPressionadas[e.key.toLowerCase()] = true; });
+        window.addEventListener('keyup', (e) => { window.teclasPressionadas[e.key.toLowerCase()] = false; });
+    </script>
+
+    <!-- Chamando os arquivos Lua externos (Como o Miguel pediu) -->
+    <!-- IMPORTANTE: Para carregar esses arquivos, use o Live Server do VS Code -->
+    <script type="application/lua" src="configuraçaoplayer.lua"></script>
+    <script type="application/lua" src="fullscreen.lua"></script>
+</body>
+
+</html>
