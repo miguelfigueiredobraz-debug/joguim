@@ -22,22 +22,24 @@ input.iskeyjump = input.iskeyhold("space")
 -- Essa função será o "cérebro" do boneco
 local movimento = function()
     -- Pulo (Tecla Espaço)
-    if input.ispressed("space") or input.ispressed("w") then
-        Body:applyForce(personagem, personagem.position, {x = 0, y = jumpForce})
+     if input.ispressed("w") or input.ispressed("space") then
+        Body.applyForce(personagem, personagem.position, {x = 0, y = jumpForce})
+     end
+ 
+ 
+ 
+     -- Movimento para os lados (Teclas A e D)
+        if input.iskeyhold("a") or input.iskeyhold("left") then
+         Body.setVelocity(personagem, {x = left, y = personagem.velocity.y})
     end
-
-    -- Movimento para os lados (Teclas A e D)
-      if input.iskeyhold("a") or input.iskeyhold("left") then
-        Body:setVelocity(personagem, {x = left, y = personagem.velocity.y})
-
-      end 
+       
         if input.iskeyhold("d") or input.iskeyhold("right") then
-        Body:setVelocity(personagem, {x = right, y = personagem.velocity.y})
-       end
-end
-
-
--- Aqui conectamos o nosso código ao motor do jogo
-js.global.Matter.Events:on(engine, "beforeUpdate", movimento)
-
-js.global.window.console:log("Lua: Configuração do Player carregada!")
+         Body.setVelocity(personagem, {x = right, y = personagem.velocity.y})
+    end
+ end
+ 
+ 
+ -- Aqui conectamos o nosso código ao motor do jogo
+ js.global.Matter.Events:on(engine, "beforeUpdate", movimento)
+ 
+ js.global.window.console:log("Lua: Configuração do Player carregada!")
