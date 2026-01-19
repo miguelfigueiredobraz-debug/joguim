@@ -34,14 +34,44 @@
             render: { fillStyle: '#333' }
         });
 
-        const personagem = Bodies.rectangle(window.innerWidth / 2, 100, 50, 50, {
-            label: 'personagem',
+        // Player 1 (Verde)
+        const personagem = Bodies.rectangle(window.innerWidth / 2 - 100, 100, 50, 50, {
+            label: 'player1',
             render: { fillStyle: '#00ff88' },
             friction: 0.1,
             restitution: 0.3
         });
 
-        Composite.add(world, [chao, personagem])
+        // Player 2 (Azul)
+        const personagem2 = Bodies.rectangle(window.innerWidth / 2 + 100, 100, 50, 50, {
+            label: 'player2',
+            render: { fillStyle: '#0088ff' },
+            friction: 0.1,
+            restitution: 0.3
+        });
+
+        // --- INIMIGOS ---
+        window.inimigos = [];
+        for (let i = 0; i < 3; i++) {
+            const inimigo = Bodies.rectangle(400 + (i * 300), 100, 40, 40, {
+                label: 'inimigo',
+                render: { fillStyle: '#ff4444' }, // Vermelho para vilões
+                friction: 0.1
+            });
+            window.inimigos.push(inimigo);
+        }
+
+        // --- BOSS ---
+        const boss = Bodies.rectangle(window.innerWidth - 300, 100, 150, 150, {
+            label: 'boss',
+            render: {
+                sprite: { texture: 'pngs/boss.png', xScale: 0.8, yScale: 0.8 }
+            },
+            friction: 0.1
+        });
+        window.boss = boss;
+
+        Composite.add(world, [chao, personagem, personagem2, boss, ...window.inimigos])
         Render.run(render)
         Runner.run(Runner.create(), engine)
 
@@ -49,10 +79,39 @@
         window.Matter = Matter;
         window.Body = Body;
         window.personagem = personagem;
+        window.personagem2 = personagem2;
+        window.boss = boss;
         window.engine = engine;
         window.world = world;
 
-        // --- 3. SISTEMA DE INPUT (TECLADO) ---
+        // --- 3. SISTEMA DE ANIMAÇÃO (SPRITES) ---
+        window.p1Frames = [];
+        const spritesheet = new Image();
+        spritesheet.src = 'pngs/spritesheet.jpg';
+
+        spritesheet.onload = () => {
+            const frameW = spritesheet.width / 4;
+            const frameH = spritesheet.height / 4;
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = frameW;
+            canvas.height = frameH;
+
+            for (let y = 0; y < 4; y++) {
+                for (let x = 0; x < 4; x++) {
+                    ctx.clearRect(0, 0, frameW, frameH);
+                    ctx.drawImage(spritesheet, x * frameW, y * frameH, frameW, frameH, 0, 0, frameW, frameH);
+                    window.p1Frames.push(canvas.toDataURL());
+                }
+            }
+            console.log("Sprites carregados!");
+
+            // Configura o tamanho inicial do sprite nos personagens
+            personagem.render.sprite = { texture: window.p1Frames[0], xScale: 0.5, yScale: 0.5 };
+            personagem2.render.sprite = { texture: window.p1Frames[4], xScale: 0.5, yScale: 0.5 };
+        };
+
+        // --- 4. SISTEMA DE INPUT (TECLADO) ---
         window.teclasPressionadas = {};
         window.addEventListener('keydown', (e) => { window.teclasPressionadas[e.key.toLowerCase()] = true; });
         window.addEventListener('keyup', (e) => { window.teclasPressionadas[e.key.toLowerCase()] = false; });
@@ -63,6 +122,8 @@
 
     <script type="application/lua" src="input.lua"></script>
     <script type="application/lua" src="configuraçaoplayer.lua"></script>
+    <script type="application/lua" src="inimigos.lua"></script>
+    <script type="application/lua" src="ertyu.lua"></script>
     <script type="application/lua" src="fullscreen.lua"></script>
 </body>
 

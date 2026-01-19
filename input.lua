@@ -1,40 +1,19 @@
 local js = require("js")
 input = {}
 
--- Mapeamento das teclas
-input.key = {
-    left = "a",
-    right = "d",
-    jump = "space"
-}
-
--- Valores padrão
-left = -5
-right = 5
-jump = -0.05
-
--- Verifica se a tecla foi pressionada (Dica do Miguel: agora funciona!)
-function input.ispressed(key)
-    local k = input.key[key] or key
+-- Função genérica para verificar se uma tecla está pressionada
+-- Aceita nomes amigáveis ou o código da tecla (e.x: "w", "arrowup", " ")
+function input.isDown(key)
+    local k = key:lower()
+    
+    -- Traduções para facilitar a vida
     if k == "space" then k = " " end
+    if k == "up" then k = "arrowup" end
+    if k == "down" then k = "arrowdown" end
+    if k == "left" then k = "arrowleft" end
+    if k == "right" then k = "arrowright" end
+    
     return js.global.teclasPressionadas[k] == true
-end
-
--- Verifica se a tecla está sendo segurada (Agora sem o loop que travava!)
-function input.iskeyhold(key)
-    local k = input.key[key] or key
-    
-    -- Traduzindo nomes para o que o computador entende
-    if k == "a" or k == "left" then k = "a" end
-    if k == "d" or k == "right" then k = "d" end
-    if k == "space" then k = " " end
-    
-    -- Verificamos se está apertada no JS
-    if js.global.teclasPressionadas[k] == true then
-        return true
-    else
-        return false
-    end
 end
 
 return input
